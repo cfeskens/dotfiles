@@ -1,0 +1,4 @@
+%_topdir /home/cfeskens/rpm
+%_signature gpg
+%_gpg_path ~/.gnupg
+%_gpg_name System Administrators

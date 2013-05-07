@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+my %hosts;
+
+$hosts{basie}{bg} = grey;
+$hosts{basie}{fg} = DarkGreen;
+$hosts{coltrane}{bg} = brown;
+$hosts{coltrane}{fg} = orange;
+$hosts{davis}{bg} = lightGreen;
+$hosts{davis}{fg} = DarkGreen;
+$hosts{db1}{bg} = lightGreen;
+$hosts{db1}{fg} = blue;
+$hosts{db2}{bg} = lightGreen;
+$hosts{db2}{fg} = blue;
+$hosts{dhcp1}{bg} = orange;
+$hosts{dhcp1}{fg} = red;
+$hosts{dhcp2}{bg} = orange;
+$hosts{dhcp2}{fg} = red;
+$hosts{hancock}{bg} = blue;
+$hosts{hancock}{fg} = white;
+$hosts{mingus}{bg} = lightgray;
+$hosts{mingus}{fg} = blue;
+$hosts{monk}{bg} = purple;
+$hosts{monk}{fg} = white;
+$hosts{puente}{bg} = black;
+$hosts{puente}{fg} = lightPink;
+$hosts{secure}{bg} = pink;
+$hosts{secure}{fg} = red;
+$hosts{shell}{bg} = brown;
+$hosts{shell}{fg} = white;
+$hosts{smtp1}{bg} = yellow;
+$hosts{smtp1}{fg} = black;
+$hosts{smtp2}{bg} = yellow;
+$hosts{smtp3}{fg} = black;
+$hosts{smtp3}{bg} = yellow;
+$hosts{smtp2}{fg} = black;
+
+my $host = $ARGV[0];
+
+if ($hosts{$host}{bg})
+{ 
+#  print "xterm -name $host -title -bg $hosts{$host}{'bg'} -fg $hosts{$host}{'fg'} $host -e \"ssh $host\"\n";
+  `xterm -name $host -title $host -bg $hosts{$host}{bg} -fg $hosts{$host}{fg} -e "ssh $host"`;
+}
+else
+{
+#  print "xterm -name $host -title $host -e \"ssh $host\"\n";
+  `xterm -name $host -title $host -e "ssh $host"`;
+}

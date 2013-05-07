@@ -1,0 +1,148 @@
+#!/bin/bash 
+############################################################
+# $HeadURL: http://repo.willamette.edu/svn/cfeskens/bin/wrap $
+# $Id: wrap 28 2009-04-09 15:22:21Z cfeskens $
+############################################################
+# wrap:  an editor wrapper for svn
+############################################################
+function getYesNo()
+{
+  local prompt=$1
+  ans=""
+  while [-z "$ans" ]; do
+    echo $prompt
+    read ans
+    case $ans in
+       "") ans=y ;;
+    [yn]*) ;;
+      	*) ;;
+    esac
+  done
+}
+function logMessage
+{
+  message=$@
+  logger -t wrapper -p local5.info "$message"
+}
+
+function printUsage ()
+{
+  echo ""
+  echo "Usage: $0 [options] files"
+  echp ""
+  echo "	-P	pass-through (wrapper is ignored)"
+  echo ""
+  return 0
+}
+
+# Cover all our bases for commands
+PATH=/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/sfw/bin:/usr/ccs/bin:/usr/ucb; export PATH
+SVN_COMMAND=$(which svn)
+
+if [ ! $SVN_COMMAND ]; then
+  echo "ERROR: Unable to find 'svn' command"
+  exit 1
+fi
+
+# Get the user
+username=`who am i|cut -f 1 -d ' '`
+
+# Whether we should skip VCS...(necessary if you have complicated vi args)
+SKIPRCEDIT=''
+
+TEMPDIR=/tmp/wrap.$$
+
+# Process any special command line args
+while [[ $1 = [-+]* ]]; do
+  if [ $SKIPRCEDIT ]; then
+    break
+  fi
+
+  case $1 in
+	-P) SKIPRCEDIT=1;;
+	 *) FLAGS="$FLAGS $1";;
+  esac
+  shift
+done
+shift $(($OPTIND -1))
+
+# Anything left is a file to edit.  In the case where $SKIPRCEDIT is true, 
+# this will be files plus flags
+FILES=$*
+
+# Bypass revision control (edit possibly contains complicated flags)
+if [[ $SKIPRCEDIT ]]; then
+  logMessage "$username edited $file bypassing VCS: $0 $FILES"
+  ${EDITOR:-vi} $FILES
+  exit
+fi
+
+# Process each file through the wrapper individually
+for eachFile in $FILES
+do
+  # get bad substitution error below if 'eachFile' is a link so reset here
+  file=$eachFile
+
+
+
+  if [ -d $file -o -p $file -o -c $file ]; then
+    echo "ERROR: File $file is not a regular file."
+    exit 1;
+  fi
+
+  if [ -h $file ]; then
+    target=$(readlink $file)
+    target=$(ls -l $file|sed -e 's/.* -> //')
+    echo "DEBUG: $file is a symlink, target is $target"
+    file=$target
+  fi
+
+  base=$(basename $file)
+  dir=`dirname $file`
+  cksum=`cksum $file`
+
+  # is the file under svn?
+    if [ -d $dir/.svn ]; then
+      echo "DEBUG: In working copy"
+      isInSVN=1
+      isInWorkingCopy=1
+      URL=$(svn info $file|grep 'URL'|awk '{ print $2 }')
+    elif grep -q 'HeadURL' $file; then
+      echo "DEBUG: Not in working copy"
+      isInSVN=1
+      URL=$(grep 'HeadURL' $file|sed -e 's/^.*HeadURL: \(.*\) \$.*$/\1/')
+    fi
+
+  logMessage "$username is editing $file"
+
+  # Invoke editor and edit the file
+  ${EDITOR:-vi} $FLAGS $file
+
+  # If the file has changed, do VCS post-processing:
+  # 	collect a reason for the change
+  #	log the change
+  #	let user know file is in VCS
+  #
+  newcksum=`cksum $file`
+  if [ "$newcksum" != "$cksum" ]; then
+    #echo "WARNING: file has changed."
+    if [ $isInSVN ]; then
+      logMessage "$username made a change to $file (under SVN revision control)"
+      if [ $isInWorkingCopy ]; then
+	# Here could 'svn update','svn status','svn diff',offer to 'svn'commit'
+	#svn diff $dir
+        echo "WARNING: File is member of svn working copy.  Be sure to commit change here or to: "
+        echo "	$URL"
+      else
+        echo "WARNING: File checked into svn.  Be sure to commit change to: "
+        echo "	$URL"
+	# Here could commit and/or diff against repo version
+      fi
+    else
+      logMessage "$username made a change to $file"
+    fi
+ fi
+done
+
+# Here could handle situation where file hasn't changed but there are
+# still uncommitted changes in a working copy.
