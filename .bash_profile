@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 PATH=$PATH:/usr/local/bin:~/bin
 
-# Get updated profile from svn
-svn export --force http://repo.willamette.edu/svn/cfeskens/ .
+# Get updated profile from git 
+~/bin/movein.sh
 
 PS1="`/bin/hostname`$ " 
 
