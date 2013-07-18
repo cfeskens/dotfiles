@@ -68,6 +68,10 @@ alias pv='puppet parser validate '
 alias pr='pkill -USR1 puppet'
 alias ptest='sudo /usr/sbin/puppetd --test'
 alias pdebug='/usr/sbin/puppetd --test --debug'
+
+# git stuff
+alias clonerc='git clone https://cfeskens@stash.app.willamette.edu/scm/~cfeskens/rc_files.git rc_files.git'
+alias clonepuppet='git clone https://cfeskens@stash.app.willamette.edu/scm/puppet/environments.git'
 ############################################################
 # Functions
 ############################################################
