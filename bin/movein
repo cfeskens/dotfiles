@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ ! -d ~/dotfiles ]; then
+  git clone https://stash.app.willamette.edu/scm/~cfeskens/dotfiles.git
+else
+  cd ~/dotfiles
+  git pull origin master
+fi
+
+if [ ! -d ~/dotfiles_old ]; then
+  mkdir ~/dotfiles_old/
+fi
+
+cd ~/dotfiles/
+
+for file in `ls -A`; do
+  if [ ! -h ~/$file ]; then
+    if [ -a ~/$file ]; then
+      echo "Moving $file from ~ to ~/dotfiles_old"
+      mv ~/$file ~/dotfiles_old/
+    fi
+    ln -sf ~/dotfiles/$file ~/$file
+  fi
+done
