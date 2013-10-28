@@ -2,7 +2,7 @@
 PATH=$PATH:/usr/local/bin:~/bin
 
 # Get updated profile from git 
-~/bin/movein.sh
+~/bin/movein
 
 PS1="`/bin/hostname`$ " 
 

@@ -47,7 +47,6 @@ case `uname` in
   Linux)
 	alias lds='ldapsearch -x -h ldap -b "o=willamette.edu" -D "cn=Directory Manager" -y /etc/.ldap.cred'
 	alias ldmod='ldapmodify -x -h ds -D "cn=Directory Manager" -y /etc/.ldap.cred'
-    alias ls='ls --color=no'
     alias sudo='sudo -E '
 	;;
   SunOS)
@@ -70,8 +69,9 @@ alias ptest='sudo /usr/sbin/puppetd --test'
 alias pdebug='/usr/sbin/puppetd --test --debug'
 
 # git stuff
-alias clonerc='git clone https://cfeskens@stash.app.willamette.edu/scm/~cfeskens/rc_files.git rc_files.git'
+alias clonedotfiles='git clone https://cfeskens@stash.app.willamette.edu/scm/~cfeskens/dotfiles.git ~/dotfiles'
 alias clonepuppet='git clone https://cfeskens@stash.app.willamette.edu/scm/puppet/environments.git'
+alias gcom='git commit origin master'
 ############################################################
 # Functions
 ############################################################
