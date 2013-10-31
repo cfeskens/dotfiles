@@ -31,7 +31,13 @@ case `uname` in
 	*)
 		;;
 esac
-export PATH EDITOR 
+
+if [ -f /etc/redhat-release ]; then
+  PUPPET_LOG=/var/log/messages
+else
+  PUPPET_LOG=/var/log/syslog
+fi
+export PATH EDITOR PUPPET_LOG
 
 ############################################################
 # bash options
@@ -64,14 +70,14 @@ alias rd='rdesktop -g 1280x1024 -a 16'
 
 # Puppet related
 alias pv='puppet parser validate '
-alias pr='pkill -USR1 puppet'
+alias pr='sudo pkill -USR1 puppet; sudo tail -f $PUPPET_LOG'
 alias ptest='sudo /usr/sbin/puppetd --test'
 alias pdebug='/usr/sbin/puppetd --test --debug'
 
 # git stuff
 alias clonedotfiles='git clone https://cfeskens@stash.app.willamette.edu/scm/~cfeskens/dotfiles.git ~/dotfiles'
 alias clonepuppet='git clone https://cfeskens@stash.app.willamette.edu/scm/puppet/environments.git'
-alias gcom='git commit origin master'
+alias gam='ssh cfeskens@appserver1 python /usr/local/adm/gam/gam.py'
 ############################################################
 # Functions
 ############################################################
