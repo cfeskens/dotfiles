@@ -73,7 +73,8 @@ alias pv='puppet parser validate '
 alias pr='sudo pkill -USR1 puppet; sudo tail -f $PUPPET_LOG'
 alias ptest='sudo /usr/sbin/puppetd --test'
 alias pdebug='/usr/sbin/puppetd --test --debug'
-
+alias puppet-lint='puppet-lint --no-80chars-check --no-inherits_across_namespaces-check'
+alias pl='puppet-lint --no-80chars-check --no-inherits_across_namespaces-check'
 # git stuff
 alias clonedotfiles='git clone https://cfeskens@stash.app.willamette.edu/scm/~cfeskens/dotfiles.git ~/dotfiles'
 alias clonepuppet='git clone https://cfeskens@stash.app.willamette.edu/scm/puppet/environments.git'
@@ -89,8 +90,56 @@ function makerpmdirs () {
 	mkdir -p ~/rpm/RPMS/$dir
   done
 }
-function fixterm () {
+function fixterm() {
   stty sane
   tput rmacs
+}
+
+function pver() {
+  file=$1
+  if [[ $file =~ ".pp" ]]; then
+    puppet parser validate $file
+  elif [[ $file =~ ".erb" ]]; then
+    erb -P -x -T '-' $file| ruby -c
+  else
+    echo "Boo! $file"
+  fi
+}
+
+function ptestall() {
+  echo "### Validating erb files ###"
+  for file in `find . -name *.erb`; do
+    if output=$(erb -P -x -T '-' $file| ruby -c); then
+     echo "   Validated $file" 
+    else
+     echo "ERROR : Failed to validate $file"
+     echo $output 
+    fi
+  done
+
+  echo "### Validating pp files ###"
+  for file in `find . -name *.pp`; do
+    if output=$(puppet parser validate $file); then
+     echo "   Validated $file" 
+    else
+     echo "ERROR : Failed to validate $file"
+     echo $output 
+    fi
+  done
+
+  echo "### Validating puppet-lint ###"
+  for file in `find . -name *.pp`; do
+    if output=$(puppet-lint $file); then
+     echo "   Validated $file" 
+    else
+    # echo "############################################################"
+    # echo "puppet-lint $file" 
+    # echo "#############################################################"
+     #echo "ERROR : Failed to validate $file"
+     puppet-lint $file
+#     exit
+    fi
+  done
+
 }
 # Here is a comment
