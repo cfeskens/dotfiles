@@ -12,5 +12,9 @@ set expandtab
 
 set statusline+=%*
 
+colorscheme ir_black
+set number
 set ruler
 set nohlsearch
+
+syntax on

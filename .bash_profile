@@ -2,12 +2,12 @@
 PATH=$PATH:/usr/local/bin:~/bin
 
 # Get updated profile from git 
-~/bin/movein
+#~/bin/movein
 
 if [[ -f /etc/redhat-release ]]; then
   TERM=putty-256color
 else
-  TERM=xterm 
+  TERM=xterm-256color
 fi
 
 PS1="`/bin/hostname`$ " 
